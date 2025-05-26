@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Bússola Nutricional</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #2E7D32;
+            --primary-light: #4CAF50;
+            --primary-dark: #1B5E20;
+            --secondary: #FF9800;
+            --secondary-light: #FFB74D;
+            --text-dark: #263238;
+            --text-light: #FFFFFF;
+            --background-light: #F5F7FA;
+            --background-dark: #ECEFF1;
+            --accent: #8BC34A;
+            --error: #F44336;
+            --success: #4CAF50;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            background-color: var(--background-light);
+            padding: 20px;
+        }
+        
+        h1, h2, h3, h4, h5 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            line-height: 1.3;
+            color: var(--primary-dark);
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--background-dark);
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .calculator-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .form-section {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .results-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: var(--background-light);
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .radio-option {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+        
+        .radio-option label {
+            display: block;
+            padding: 10px;
+            text-align: center;
+            background-color: var(--background-light);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .radio-option input[type="radio"]:checked + label {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary-light);
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .result-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .result-card h3 {
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+            font-size: 20px;
+        }
+        
+        .result-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .result-explanation {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .macro-bar {
+            height: 30px;
+            background-color: #eee;
+            border-radius: 15px;
+            margin: 15px 0;
+            overflow: hidden;
+            display: flex;
+        }
+        
+        .macro-segment {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .protein-segment {
+            background-color: #D32F2F;
+        }
+        
+        .carb-segment {
+            background-color: #FFA000;
+        }
+        
+        .fat-segment {
+            background-color: #0288D1;
+        }
+        
+        .macro-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        
+        .macro-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .macro-item-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .macro-item-title span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        
+        .protein-color {
+            background-color: #D32F2F;
+        }
+        
+        .carb-color {
+            background-color: #FFA000;
+        }
+        
+        .fat-color {
+            background-color: #0288D1;
+        }
+        
+        .macro-item-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .macro-item-unit {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .disclaimer {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #FFF8E1;
+            border-left: 4px solid #FFC107;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .disclaimer h3 {
+            margin-bottom: 10px;
+            color: #F57C00;
+            font-size: 16px;
+        }
+        
+        .error-message {
+            color: var(--error);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .activity-description {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        .tooltip {
+            display: inline-block;
+            position: relative;
+            margin-left: 5px;
+            cursor: help;
+        }
+        
+        .tooltip-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            background-color: #ccc;
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            font-weight: normal;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .pdf-button {
+            margin-top: 20px;
+            background-color: #E53935;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .pdf-button:hover {
+            background-color: #C62828;
+        }
+        
+        .pdf-icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .calculator-container {
+                flex-direction: column;
+            }
+            
+            .form-section, .results-section {
+                width: 100%;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+            }
+            
+            .radio-option {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Calculadora Bússola Nutricional</h1>
+            <p>Descubra suas necessidades calóricas e macronutrientes personalizados</p>
+        </div>
+        
+        <div class="calculator-container">
+            <div class="form-section">
+                <form id="calculator-form">
+                    <div class="form-group">
+                        <label for="age">Idade</label>
+                        <input type="number" id="age" class="form-control" min="18" max="100" required>
+                        <div class="error-message" id="age-error">Por favor, insira uma idade válida entre 18 e 100 anos.</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Sexo Biológico</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="gender-male" name="gender" value="male" required>
+                                <label for="gender-male">Masculino</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="gender-female" name="gender" value="female">
+                                <label for="gender-female">Feminino</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="weight">Peso (kg)</label>
+                        <input type="number" id="weight" class="form-control" min="30" max="300" step="0.1" required>
+                        <div class="error-message" id="weight-error">Por favor, insira um peso válido entre 30 e 300 kg.</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="height">Altura (cm)</label>
+                        <input type="number" id="height" class="form-control" min="100" max="250" required>
+                        <div class="error-message" id="height-error">Por favor, insira uma altura válida entre 100 e 250 cm.</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Nível de Atividade Física</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="activity-sedentary" name="activity" value="sedentary" required>
+                                <label for="activity-sedentary">Sedentário</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="activity-light" name="activity" value="light">
+                                <label for="activity-light">Levemente Ativo</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="activity-moderate" name="activity" value="moderate">
+                                <label for="activity-moderate">Moderadamente Ativo</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="activity-very" name="activity" value="very">
+                                <label for="activity-very">Muito Ativo</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="activity-extra" name="activity" value="extra">
+                                <label for="activity-extra">Extremamente Ativo</label>
+                            </div>
+                        </div>
+                        <div class="activity-description" id="activity-description">
+                            Selecione seu nível de atividade para ver a descrição.
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Objetivo</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="goal-lose" name="goal" value="lose" required>
+                                <label for="goal-lose">Perder Gordura</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="goal-maintain" name="goal" value="maintain">
+                                <label for="goal-maintain">Manter Peso</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="goal-gain" name="goal" value="gain">
+                                <label for="goal-gain">Ganhar Massa</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Preferências Alimentares (Opcional)</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="diet-regular" name="diet" value="regular" checked>
+                                <label for="diet-regular">Regular</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="diet-vegetarian" name="diet" value="vegetarian">
+                                <label for="diet-vegetarian">Vegetariano</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="diet-vegan" name="diet" value="vegan">
+                                <label for="diet-vegan">Vegano</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Número de Refeições por Dia</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="meals-3" name="meals" value="3" checked>
+                                <label for="meals-3">3</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="meals-4" name="meals" value="4">
+                                <label for="meals-4">4</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="meals-5" name="meals" value="5">
+                                <label for="meals-5">5</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="meals-6" name="meals" value="6">
+                                <label for="meals-6">6</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Aceita Refeições Líquidas (ex: Shakes de Proteína)?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="liquid-yes" name="liquid" value="yes" checked>
+                                <label for="liquid-yes">Sim</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="liquid-no" name="liquid" value="no">
+                                <label for="liquid-no">Não</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">Calcular Metas Nutricionais</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="results-section" id="results-section">
+                <h2>Suas Metas Nutricionais</h2>
+                
+                <div id="results-content">
+                    <div class="result-card">
+                        <h3>Taxa Metabólica Basal (TMB)</h3>
+                        <div class="result-value" id="bmr-value">0</div>
+                        <div class="result-explanation">Calorias que seu corpo gasta em repouso</div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <h3>Gasto Energético Total (GET)</h3>
+                        <div class="result-value" id="tdee-value">0</div>
+                        <div class="result-explanation">Calorias que seu corpo gasta diariamente</div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <h3>Meta Calórica Diária</h3>
+                        <div class="result-value" id="target-calories">0</div>
+                        <div class="result-explanation">Calorias ajustadas para seu objetivo</div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <h3>Distribuição de Macronutrientes</h3>
+                        
+                        <div class="macro-bar">
+                            <div class="macro-segment protein-segment" id="protein-bar">30%</div>
+                            <div class="macro-segment carb-segment" id="carb-bar">40%</div>
+                            <div class="macro-segment fat-segment" id="fat-bar">30%</div>
+                        </div>
+                        
+                        <div class="macro-details">
+                            <div class="macro-item">
+                                <div class="macro-item-title">
+                                    <span class="protein-color"></span>
+                                    Proteínas
+                                </div>
+                                <div class="macro-item-value" id="protein-value">0</div>
+                                <div class="macro-item-unit">gramas</div>
+                            </div>
+                            
+                            <div class="macro-item">
+                                <div class="macro-item-title">
+                                    <span class="carb-color"></span>
+                                    Carboidratos
+                                </div>
+                                <div class="macro-item-value" id="carb-value">0</div>
+                                <div class="macro-item-unit">gramas</div>
+                            </div>
+                            
+                            <div class="macro-item">
+                                <div class="macro-item-title">
+                                    <span class="fat-color"></span>
+                                    Gorduras
+                                </div>
+                                <div class="macro-item-value" id="fat-value">0</div>
+                                <div class="macro-item-unit">gramas</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <h3>Distribuição por Refeição</h3>
+                        <div id="meals-distribution">
+                            <!-- Meal distribution will be generated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="disclaimer">
+                        <h3>Aviso Importante</h3>
+                        <p>Esta calculadora fornece estimativas baseadas em fórmulas padrão e não substitui a consulta com um profissional de saúde qualificado.</p>
+                        <p>Os resultados são aproximações e podem variar de acordo com fatores individuais não considerados neste cálculo.</p>
+                    </div>
+                </div>
+                
+                <button id="download-pdf" class="btn pdf-button btn-block">
+                    <svg class="pdf-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                        <path d="M369.9 97.9L286 14C277 5 264.8-.1 252.1-.1H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V131.9c0-12.7-5.1-25-14.1-34zM332.1 128H256V51.9l76.1 76.1zM48 464V48h160v104c0 13.3 10.7 24 24 24h104v288H48zm250.2-143.7c-12.2-12-47-8.7-64.4-6.5-17.2-10.5-28.7-25-36.8-46.3 3.9-16.1 10.1-40.6 5.4-56-4.2-26.2-37.8-23.6-42.6-5.9-4.4 16.1-.4 38.5 7 67.1-10 23.9-24.9 56-35.4 74.4-20 10.3-47 26.2-51 46.2-3.3 15.8 26 55.2 76.1-31.2 22.4-7.4 46.8-16.5 68.4-20.1 18.9 10.2 41 17 55.8 17 25.5 0 28-28.2 17.5-38.7zm-198.1 77.8c5.1-13.7 24.5-29.5 30.4-35-19 30.3-30.4 35.7-30.4 35zm81.6-190.6c7.4 0 6.7 32.1 1.8 40.8-4.4-13.9-4.3-40.8-1.8-40.8zm-24.4 136.6c9.7-16.9 18-37 24.7-54.7 8.3 15.1 18.9 27.2 30.1 35.5-20.8 4.3-38.9 13.1-54.8 19.2zm131.6-5s-5 6-37.3-7.8c35.1-2.6 40.9 5.4 37.3 7.8z"/>
+                    </svg>
+                    Baixar Resultados em PDF
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Activity level descriptions
+            const activityDescriptions = {
+                'sedentary': 'Pouco ou nenhum exercício, trabalho de escritório (fator: 1.2)',
+                'light': 'Exercício leve/esportes 1-3 dias por semana (fator: 1.375)',
+                'moderate': 'Exercício moderado/esportes 3-5 dias por semana (fator: 1.55)',
+                'very': 'Exercício intenso/esportes 6-7 dias por semana (fator: 1.725)',
+                'extra': 'Exercício muito intenso, trabalho físico pesado + exercício diário (fator: 1.9)'
+            };
+            
+            // Update activity description when selection changes
+            const activityInputs = document.querySelectorAll('input[name="activity"]');
+            const activityDescription = document.getElementById('activity-description');
+            
+            activityInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    activityDescription.textContent = activityDescriptions[this.value];
+                });
+            });
+            
+            // Form validation and calculation
+            const calculatorForm = document.getElementById('calculator-form');
+            const resultsSection = document.getElementById('results-section');
+            
+            calculatorForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate inputs
+                let isValid = true;
+                
+                const age = parseInt(document.getElementById('age').value);
+                const ageError = document.getElementById('age-error');
+                if (isNaN(age) || age < 18 || age > 100) {
+                    ageError.style.display = 'block';
+                    isValid = false;
+                } else {
+                    ageError.style.display = 'none';
+                }
+                
+                const weight = parseFloat(document.getElementById('weight').value);
+                const weightError = document.getElementById('weight-error');
+                if (isNaN(weight) || weight < 30 || weight > 300) {
+                    weightError.style.display = 'block';
+                    isValid = false;
+                } else {
+                    weightError.style.display = 'none';
+                }
+                
+                const height = parseInt(document.getElementById('height').value);
+                const heightError = document.getElementById('height-error');
+                if (isNaN(height) || height < 100 || height > 250) {
+                    heightError.style.display = 'block';
+                    isValid = false;
+                } else {
+                    heightError.style.display = 'none';
+                }
+                
+                if (!isValid) {
+                    return;
+                }
+                
+                // Get form values
+                const gender = document.querySelector('input[name="gender"]:checked').value;
+                const activity = document.querySelector('input[name="activity"]:checked').value;
+                const goal = document.querySelector('input[name="goal"]:checked').value;
+                const diet = document.querySelector('input[name="diet"]:checked').value;
+                const meals = parseInt(document.querySelector('input[name="meals"]:checked').value);
+                const liquid = document.querySelector('input[name="liquid"]:checked').value;
+                
+                // Calculate BMR using Mifflin-St Jeor formula
+                let bmr;
+                if (gender === 'male') {
+                    bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+                } else {
+                    bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+                }
+                
+                // Calculate TDEE based on activity level
+                const activityFactors = {
+                    'sedentary': 1.2,
+                    'light': 1.375,
+                    'moderate': 1.55,
+                    'very': 1.725,
+                    'extra': 1.9
+                };
+                
+                const tdee = bmr * activityFactors[activity];
+                
+                // Adjust calories based on goal
+                let targetCalories;
+                if (goal === 'lose') {
+                    targetCalories = tdee - 500; // 500 calorie deficit
+                    // Ensure minimum calories
+                    if (gender === 'male' && targetCalories < 1500) {
+                        targetCalories = 1500;
+                    } else if (gender === 'female' && targetCalories < 1200) {
+                        targetCalories = 1200;
+                    }
+                } else if (goal === 'maintain') {
+                    targetCalories = tdee;
+                } else { // gain
+                    targetCalories = tdee + 500; // 500 calorie surplus
+                }
+                
+                // Calculate macronutrients
+                let proteinRatio, carbRatio, fatRatio;
+                let proteinGrams, carbGrams, fatGrams;
+                
+                if (goal === 'lose') {
+                    // Higher protein for fat loss
+                    proteinGrams = weight * 2.2; // 2.2g per kg of bodyweight
+                    fatGrams = weight * 1; // 1g per kg of bodyweight
+                    
+                    // Calculate remaining calories for carbs
+                    const proteinCalories = proteinGrams * 4;
+                    const fatCalories = fatGrams * 9;
+                    const carbCalories = targetCalories - proteinCalories - fatCalories;
+                    carbGrams = Math.max(carbCalories / 4, 50); // Ensure minimum carbs
+                    
+                    // Recalculate ratios
+                    proteinRatio = (proteinGrams * 4) / targetCalories;
+                    fatRatio = (fatGrams * 9) / targetCalories;
+                    carbRatio = (carbGrams * 4) / targetCalories;
+                    
+                } else if (goal === 'maintain') {
+                    // Balanced macros for maintenance
+                    proteinGrams = weight * 1.8; // 1.8g per kg of bodyweight
+                    fatRatio = 0.3; // 30% of calories from fat
+                    fatGrams = (targetCalories * fatRatio) / 9;
+                    
+                    // Calculate remaining calories for carbs
+                    const proteinCalories = proteinGrams * 4;
+                    const fatCalories = fatGrams * 9;
+                    const carbCalories = targetCalories - proteinCalories - fatCalories;
+                    carbGrams = carbCalories / 4;
+                    
+                    // Recalculate protein ratio
+                    proteinRatio = (proteinGrams * 4) / targetCalories;
+                    carbRatio = (carbGrams * 4) / targetCalories;
+                    
+                } else { // gain
+                    // Higher carbs for muscle gain
+                    proteinGrams = weight * 1.8; // 1.8g per kg of bodyweight
+                    fatRatio = 0.25; // 25% of calories from fat
+                    fatGrams = (targetCalories * fatRatio) / 9;
+                    
+                    // Calculate remaining calories for carbs
+                    const proteinCalories = proteinGrams * 4;
+                    const fatCalories = fatGrams * 9;
+                    const carbCalories = targetCalories - proteinCalories - fatCalories;
+                    carbGrams = carbCalories / 4;
+                    
+                    // Recalculate protein ratio
+                    proteinRatio = (proteinGrams * 4) / targetCalories;
+                    carbRatio = (carbGrams * 4) / targetCalories;
+                }
+                
+                // Round values for display
+                bmr = Math.round(bmr);
+                tdee = Math.round(tdee);
+                targetCalories = Math.round(targetCalories);
+                proteinGrams = Math.round(proteinGrams);
+                carbGrams = Math.round(carbGrams);
+                fatGrams = Math.round(fatGrams);
+                
+                // Calculate percentages for the bar
+                const proteinPercent = Math.round(proteinRatio * 100);
+                const carbPercent = Math.round(carbRatio * 100);
+                const fatPercent = Math.round(fatRatio * 100);
+                
+                // Update results
+                document.getElementById('bmr-value').textContent = bmr + ' kcal';
+                document.getElementById('tdee-value').textContent = tdee + ' kcal';
+                document.getElementById('target-calories').textContent = targetCalories + ' kcal';
+                
+                document.getElementById('protein-value').textContent = proteinGrams;
+                document.getElementById('carb-value').textContent = carbGrams;
+                document.getElementById('fat-value').textContent = fatGrams;
+                
+                // Update macro bar
+                const proteinBar = document.getElementById('protein-bar');
+                const carbBar = document.getElementById('carb-bar');
+                const fatBar = document.getElementById('fat-bar');
+                
+                proteinBar.style.width = proteinPercent + '%';
+                proteinBar.textContent = proteinPercent + '%';
+                
+                carbBar.style.width = carbPercent + '%';
+                carbBar.textContent = carbPercent + '%';
+                
+                fatBar.style.width = fatPercent + '%';
+                fatBar.textContent = fatPercent + '%';
+                
+                // Generate meal distribution
+                const mealsDistribution = document.getElementById('meals-distribution');
+                mealsDistribution.innerHTML = '';
+                
+                // Define meal percentages based on number of meals
+                let mealPercentages;
+                if (meals === 3) {
+                    mealPercentages = [0.3, 0.4, 0.3]; // Breakfast 30%, Lunch 40%, Dinner 30%
+                } else if (meals === 4) {
+                    mealPercentages = [0.25, 0.3, 0.15, 0.3]; // Breakfast, Lunch, Snack, Dinner
+                } else if (meals === 5) {
+                    mealPercentages = [0.2, 0.1, 0.3, 0.1, 0.3]; // Breakfast, Snack, Lunch, Snack, Dinner
+                } else { // 6 meals
+                    mealPercentages = [0.2, 0.1, 0.25, 0.1, 0.25, 0.1]; // Breakfast, Snack, Lunch, Snack, Dinner, Snack
+                }
+                
+                // Meal names
+                const mealNames = ['Café da Manhã', 'Lanche da Manhã', 'Almoço', 'Lanche da Tarde', 'Jantar', 'Ceia'];
+                
+                // Create meal distribution table
+                const table = document.createElement('table');
+                table.style.width = '100%';
+                table.style.borderCollapse = 'collapse';
+                table.style.marginTop = '10px';
+                
+                // Create header row
+                const headerRow = document.createElement('tr');
+                
+                const mealHeader = document.createElement('th');
+                mealHeader.textContent = 'Refeição';
+                mealHeader.style.textAlign = 'left';
+                mealHeader.style.padding = '8px';
+                mealHeader.style.borderBottom = '1px solid #ddd';
+                headerRow.appendChild(mealHeader);
+                
+                const caloriesHeader = document.createElement('th');
+                caloriesHeader.textContent = 'Calorias';
+                caloriesHeader.style.textAlign = 'center';
+                caloriesHeader.style.padding = '8px';
+                caloriesHeader.style.borderBottom = '1px solid #ddd';
+                headerRow.appendChild(caloriesHeader);
+                
+                const proteinHeader = document.createElement('th');
+                proteinHeader.textContent = 'Proteínas';
+                proteinHeader.style.textAlign = 'center';
+                proteinHeader.style.padding = '8px';
+                proteinHeader.style.borderBottom = '1px solid #ddd';
+                headerRow.appendChild(proteinHeader);
+                
+                const carbHeader = document.createElement('th');
+                carbHeader.textContent = 'Carboidratos';
+                carbHeader.style.textAlign = 'center';
+                carbHeader.style.padding = '8px';
+                carbHeader.style.borderBottom = '1px solid #ddd';
+                headerRow.appendChild(carbHeader);
+                
+                const fatHeader = document.createElement('th');
+                fatHeader.textContent = 'Gorduras';
+                fatHeader.style.textAlign = 'center';
+                fatHeader.style.padding = '8px';
+                fatHeader.style.borderBottom = '1px solid #ddd';
+                headerRow.appendChild(fatHeader);
+                
+                table.appendChild(headerRow);
+                
+                // Create rows for each meal
+                for (let i = 0; i < meals; i++) {
+                    const row = document.createElement('tr');
+                    
+                    const mealCell = document.createElement('td');
+                    mealCell.textContent = mealNames[i];
+                    mealCell.style.padding = '8px';
+                    mealCell.style.borderBottom = '1px solid #ddd';
+                    row.appendChild(mealCell);
+                    
+                    const mealCalories = Math.round(targetCalories * mealPercentages[i]);
+                    const mealProtein = Math.round(proteinGrams * mealPercentages[i]);
+                    const mealCarb = Math.round(carbGrams * mealPercentages[i]);
+                    const mealFat = Math.round(fatGrams * mealPercentages[i]);
+                    
+                    const caloriesCell = document.createElement('td');
+                    caloriesCell.textContent = mealCalories + ' kcal';
+                    caloriesCell.style.textAlign = 'center';
+                    caloriesCell.style.padding = '8px';
+                    caloriesCell.style.borderBottom = '1px solid #ddd';
+                    row.appendChild(caloriesCell);
+                    
+                    const proteinCell = document.createElement('td');
+                    proteinCell.textContent = mealProtein + 'g';
+                    proteinCell.style.textAlign = 'center';
+                    proteinCell.style.padding = '8px';
+                    proteinCell.style.borderBottom = '1px solid #ddd';
+                    row.appendChild(proteinCell);
+                    
+                    const carbCell = document.createElement('td');
+                    carbCell.textContent = mealCarb + 'g';
+                    carbCell.style.textAlign = 'center';
+                    carbCell.style.padding = '8px';
+                    carbCell.style.borderBottom = '1px solid #ddd';
+                    row.appendChild(carbCell);
+                    
+                    const fatCell = document.createElement('td');
+                    fatCell.textContent = mealFat + 'g';
+                    fatCell.style.textAlign = 'center';
+                    fatCell.style.padding = '8px';
+                    fatCell.style.borderBottom = '1px solid #ddd';
+                    row.appendChild(fatCell);
+                    
+                    table.appendChild(row);
+                }
+                
+                mealsDistribution.appendChild(table);
+                
+                // Show results section
+                resultsSection.style.display = 'block';
+                
+                // Scroll to results
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+                
+                // Store calculation data for PDF
+                window.calculationData = {
+                    personalInfo: {
+                        age: age,
+                        gender: gender === 'male' ? 'Masculino' : 'Feminino',
+                        weight: weight,
+                        height: height,
+                        activity: activity,
+                        activityDescription: activityDescriptions[activity],
+                        goal: goal,
+                        diet: diet,
+                        meals: meals,
+                        liquid: liquid
+                    },
+                    results: {
+                        bmr: bmr,
+                        tdee: tdee,
+                        targetCalories: targetCalories,
+                        proteinGrams: proteinGrams,
+                        carbGrams: carbGrams,
+                        fatGrams: fatGrams,
+                        proteinPercent: proteinPercent,
+                        carbPercent: carbPercent,
+                        fatPercent: fatPercent
+                    },
+                    mealDistribution: {
+                        mealNames: mealNames.slice(0, meals),
+                        mealPercentages: mealPercentages,
+                        mealCalories: mealPercentages.map(p => Math.round(targetCalories * p)),
+                        mealProtein: mealPercentages.map(p => Math.round(proteinGrams * p)),
+                        mealCarb: mealPercentages.map(p => Math.round(carbGrams * p)),
+                        mealFat: mealPercentages.map(p => Math.round(fatGrams * p))
+                    }
+                };
+            });
+            
+            // PDF Generation
+            document.getElementById('download-pdf').addEventListener('click', function() {
+                // Check if jsPDF is loaded
+                if (typeof window.jspdf === 'undefined') {
+                    window.jspdf = window.jspdf || {};
+                }
+                
+                const { jsPDF } = window.jspdf;
+                
+                // Create new PDF document
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                
+                // Get calculation data
+                const data = window.calculationData;
+                
+                // Set font sizes
+                const titleSize = 18;
+                const headingSize = 14;
+                const subheadingSize = 12;
+                const normalSize = 10;
+                const smallSize = 8;
+                
+                // Add header
+                doc.setFontSize(titleSize);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Bússola Nutricional', 105, 20, { align: 'center' });
+                
+                doc.setFontSize(subheadingSize);
+                doc.setFont('helvetica', 'normal');
+                doc.text('Relatório de Metas Nutricionais Personalizadas', 105, 27, { align: 'center' });
+                
+                // Add date
+                const today = new Date();
+                const dateStr = today.toLocaleDateString('pt-BR');
+                doc.setFontSize(normalSize);
+                doc.text(`Data: ${dateStr}`, 20, 35);
+                
+                // Add personal information section
+                doc.setFontSize(headingSize);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Informações Pessoais', 20, 45);
+                
+                doc.setFontSize(normalSize);
+                doc.setFont('helvetica', 'normal');
+                
+                const personalInfo = [
+                    `Idade: ${data.personalInfo.age} anos`,
+                    `Sexo: ${data.personalInfo.gender}`,
+                    `Peso: ${data.personalInfo.weight} kg`,
+                    `Altura: ${data.personalInfo.height} cm`,
+                    `Nível de Atividade: ${getActivityLabel(data.personalInfo.activity)}`,
+                    `Objetivo: ${getGoalLabel(data.personalInfo.goal)}`,
+                    `Preferência Alimentar: ${getDietLabel(data.personalInfo.diet)}`,
+                    `Número de Refeições: ${data.personalInfo.meals}`,
+                    `Aceita Refeições Líquidas: ${data.personalInfo.liquid === 'yes' ? 'Sim' : 'Não'}`
+                ];
+                
+                let yPos = 52;
+                personalInfo.forEach(info => {
+                    doc.text(info, 25, yPos);
+                    yPos += 7;
+                });
+                
+                // Add results section
+                yPos += 5;
+                doc.setFontSize(headingSize);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Resultados do Cálculo', 20, yPos);
+                yPos += 10;
+                
+                doc.setFontSize(normalSize);
+                doc.setFont('helvetica', 'normal');
+                
+                // TMB
+                doc.setFont('helvetica', 'bold');
+                doc.text('Taxa Metabólica Basal (TMB):', 25, yPos);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`${data.results.bmr} kcal`, 120, yPos);
+                yPos += 7;
+                
+                // TDEE
+                doc.setFont('helvetica', 'bold');
+                doc.text('Gasto Energético Total (GET):', 25, yPos);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`${data.results.tdee} kcal`, 120, yPos);
+                yPos += 7;
+                
+                // Target Calories
+                doc.setFont('helvetica', 'bold');
+                doc.text('Meta Calórica Diária:', 25, yPos);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`${data.results.targetCalories} kcal`, 120, yPos);
+                yPos += 15;
+                
+                // Macronutrients
+                doc.setFontSize(subheadingSize);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Distribuição de Macronutrientes', 25, yPos);
+                yPos += 10;
+                
+                // Draw macro bar
+                const barWidth = 160;
+                const barHeight = 15;
+                const barX = 25;
+                const barY = yPos;
+                
+                // Protein segment
+                const proteinWidth = (barWidth * data.results.proteinPercent) / 100;
+                doc.setFillColor(211, 47, 47); // #D32F2F
+                doc.rect(barX, barY, proteinWidth, barHeight, 'F');
+                
+                // Carb segment
+                const carbWidth = (barWidth * data.results.carbPercent) / 100;
+                doc.setFillColor(255, 160, 0); // #FFA000
+                doc.rect(barX + proteinWidth, barY, carbWidth, barHeight, 'F');
+                
+                // Fat segment
+                const fatWidth = (barWidth * data.results.fatPercent) / 100;
+                doc.setFillColor(2, 136, 209); // #0288D1
+                doc.rect(barX + proteinWidth + carbWidth, barY, fatWidth, barHeight, 'F');
+                
+                // Add labels to bar
+                doc.setFontSize(smallSize);
+                doc.setTextColor(255, 255, 255);
+                doc.setFont('helvetica', 'bold');
+                
+                // Only add text if segment is wide enough
+                if (proteinWidth > 20) {
+                    doc.text(`${data.results.proteinPercent}%`, barX + (proteinWidth / 2), barY + (barHeight / 2) + 1, { align: 'center' });
+                }
+                
+                if (carbWidth > 20) {
+                    doc.text(`${data.results.carbPercent}%`, barX + proteinWidth + (carbWidth / 2), barY + (barHeight / 2) + 1, { align: 'center' });
+                }
+                
+                if (fatWidth > 20) {
+                    doc.text(`${data.results.fatPercent}%`, barX + proteinWidth + carbWidth + (fatWidth / 2), barY + (barHeight / 2) + 1, { align: 'center' });
+                }
+                
+                // Reset text color
+                doc.setTextColor(0, 0, 0);
+                
+                yPos += barHeight + 10;
+                
+                // Macro details
+                doc.setFontSize(normalSize);
+                
+                // Create a table for macros
+                const macroTableData = [
+                    ['Macronutriente', 'Gramas', 'Calorias', 'Percentual'],
+                    ['Proteínas', `${data.results.proteinGrams}g`, `${data.results.proteinGrams * 4} kcal`, `${data.results.proteinPercent}%`],
+                    ['Carboidratos', `${data.results.carbGrams}g`, `${data.results.carbGrams * 4} kcal`, `${data.results.carbPercent}%`],
+                    ['Gorduras', `${data.results.fatGrams}g`, `${data.results.fatGrams * 9} kcal`, `${data.results.fatPercent}%`]
+                ];
+                
+                doc.autoTable({
+                    startY: yPos,
+                    head: [macroTableData[0]],
+                    body: macroTableData.slice(1),
+                    theme: 'grid',
+                    headStyles: {
+                        fillColor: [46, 125, 50], // --primary
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold'
+                    },
+                    styles: {
+                        fontSize: normalSize,
+                        cellPadding: 5
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 40 },
+                        1: { cellWidth: 30, halign: 'center' },
+                        2: { cellWidth: 30, halign: 'center' },
+                        3: { cellWidth: 30, halign: 'center' }
+                    }
+                });
+                
+                // Get the y position after the table
+                yPos = doc.autoTable.previous.finalY + 15;
+                
+                // Add meal distribution section
+                doc.setFontSize(subheadingSize);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Distribuição por Refeição', 25, yPos);
+                yPos += 10;
+                
+                // Create meal distribution table
+                const mealTableHead = [['Refeição', 'Calorias', 'Proteínas', 'Carboidratos', 'Gorduras']];
+                
+                const mealTableBody = [];
+                for (let i = 0; i < data.personalInfo.meals; i++) {
+                    mealTableBody.push([
+                        data.mealDistribution.mealNames[i],
+                        `${data.mealDistribution.mealCalories[i]} kcal`,
+                        `${data.mealDistribution.mealProtein[i]}g`,
+                        `${data.mealDistribution.mealCarb[i]}g`,
+                        `${data.mealDistribution.mealFat[i]}g`
+                    ]);
+                }
+                
+                doc.autoTable({
+                    startY: yPos,
+                    head: mealTableHead,
+                    body: mealTableBody,
+                    theme: 'grid',
+                    headStyles: {
+                        fillColor: [46, 125, 50], // --primary
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold'
+                    },
+                    styles: {
+                        fontSize: normalSize,
+                        cellPadding: 5
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 40 },
+                        1: { cellWidth: 30, halign: 'center' },
+                        2: { cellWidth: 30, halign: 'center' },
+                        3: { cellWidth: 30, halign: 'center' },
+                        4: { cellWidth: 30, halign: 'center' }
+                    }
+                });
+                
+                // Get the y position after the table
+                yPos = doc.autoTable.previous.finalY + 15;
+                
+                // Add disclaimer
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                doc.setFillColor(255, 248, 225); // #FFF8E1
+                doc.rect(20, yPos, 170, 30, 'F');
+                
+                doc.setFontSize(subheadingSize);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(245, 124, 0); // #F57C00
+                doc.text('Aviso Importante', 25, yPos + 7);
+                
+                doc.setFontSize(smallSize);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(0, 0, 0);
+                doc.text('Esta calculadora fornece estimativas baseadas em fórmulas padrão e não substitui a', 25, yPos + 14);
+                doc.text('consulta com um profissional de saúde qualificado. Os resultados são aproximações e', 25, yPos + 19);
+                doc.text('podem variar de acordo com fatores individuais não considerados neste cálculo.', 25, yPos + 24);
+                
+                // Add footer
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`Bússola Nutricional - Página ${i} de ${pageCount}`, 105, 290, { align: 'center' });
+                }
+                
+                // Save the PDF
+                doc.save('Bussola_Nutricional_Resultados.pdf');
+                
+                // Helper functions for labels
+                function getActivityLabel(activity) {
+                    const labels = {
+                        'sedentary': 'Sedentário',
+                        'light': 'Levemente Ativo',
+                        'moderate': 'Moderadamente Ativo',
+                        'very': 'Muito Ativo',
+                        'extra': 'Extremamente Ativo'
+                    };
+                    return labels[activity] || activity;
+                }
+                
+                function getGoalLabel(goal) {
+                    const labels = {
+                        'lose': 'Perder Gordura',
+                        'maintain': 'Manter Peso',
+                        'gain': 'Ganhar Massa'
+                    };
+                    return labels[goal] || goal;
+                }
+                
+                function getDietLabel(diet) {
+                    const labels = {
+                        'regular': 'Regular',
+                        'vegetarian': 'Vegetariano',
+                        'vegan': 'Vegano'
+                    };
+                    return labels[diet] || diet;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
