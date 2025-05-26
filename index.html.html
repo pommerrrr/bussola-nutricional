@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bússola Nutricional - Descubra suas metas nutricionais personalizadas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2E7D32;
+            --primary-light: #4CAF50;
+            --primary-dark: #1B5E20;
+            --secondary: #FF9800;
+            --secondary-light: #FFB74D;
+            --text-dark: #263238;
+            --text-light: #FFFFFF;
+            --background-light: #F5F7FA;
+            --background-dark: #ECEFF1;
+            --accent: #8BC34A;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            background-color: var(--background-light);
+        }
+        
+        h1, h2, h3, h4, h5 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: var(--secondary);
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 50px;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary-light);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn-large {
+            padding: 18px 40px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--text-light);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-light);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1490818387583-1baba5e638af?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: var(--text-light);
+            padding: 180px 0 100px;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background-color: var(--background-light);
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 36px;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title h2:after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 4px;
+            background-color: var(--accent);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background-color: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 36px;
+        }
+        
+        .feature-card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+        }
+        
+        /* How It Works Section */
+        .how-it-works {
+            padding: 100px 0;
+            background-color: var(--background-dark);
+        }
+        
+        .steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 250px;
+            max-width: 350px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+        
+        .step h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+        }
+        
+        .step p {
+            font-size: 16px;
+        }
+        
+        /* Testimonials Section */
+        .testimonials {
+            padding: 100px 0;
+            background-color: var(--background-light);
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+        
+        .testimonial-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        
+        .testimonial-card:before {
+            content: '"';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 60px;
+            color: var(--primary-light);
+            opacity: 0.2;
+            font-family: Georgia, serif;
+        }
+        
+        .testimonial-content {
+            margin-bottom: 20px;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+        
+        .testimonial-author img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+        
+        .author-info h4 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .author-info p {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* FAQ Section */
+        .faq {
+            padding: 100px 0;
+            background-color: var(--background-dark);
+        }
+        
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .faq-item {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .faq-question {
+            background-color: white;
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--primary-dark);
+        }
+        
+        .faq-answer {
+            background-color: #f9f9f9;
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        
+        .faq-item.active .faq-answer {
+            padding: 20px;
+            max-height: 1000px;
+        }
+        
+        .faq-question:after {
+            content: '+';
+            font-size: 22px;
+            transition: transform 0.3s ease;
+        }
+        
+        .faq-item.active .faq-question:after {
+            transform: rotate(45deg);
+        }
+        
+        /* CTA Section */
+        .cta {
+            padding: 100px 0;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--text-light);
+            text-align: center;
+        }
+        
+        .cta h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        .cta p {
+            font-size: 18px;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .guarantee {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 40px;
+        }
+        
+        .guarantee img {
+            width: 80px;
+            margin-right: 20px;
+        }
+        
+        .guarantee-text {
+            text-align: left;
+        }
+        
+        .guarantee-text h4 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #1a1a1a;
+            color: #999;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column {
+            flex: 1;
+            min-width: 250px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-column h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column ul li a {
+            color: #999;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-column ul li a:hover {
+            color: white;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #333;
+        }
+        
+        .disclaimer {
+            background-color: #f8f8f8;
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 50px;
+            font-size: 14px;
+            color: #666;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .disclaimer h3 {
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .section-title h2 {
+                font-size: 30px;
+            }
+            
+            .feature-card, .testimonial-card {
+                padding: 20px;
+            }
+            
+            .steps {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .step {
+                max-width: 100%;
+                margin-bottom: 40px;
+            }
+            
+            .cta h2 {
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <a href="#" class="logo">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMjU2IDhDMTE5IDggOCAxMTkgOCAyNTZzMTExIDI0OCAyNDggMjQ4IDI0OC0xMTEgMjQ4LTI0OFMzOTMgOCAyNTYgOHptMCA0NDhjLTExMC41IDAtMjAwLTg5LjUtMjAwLTIwMFMxNDUuNSA1NiAyNTYgNTZzMjAwIDg5LjUgMjAwIDIwMC04OS41IDIwMC0yMDAgMjAwem0xNi4yLTMyNy44Yy0xMS40LTQuNC0yNC41LTEuNy0zMy40IDYuOS05LjkgOS42LTEyLjQgMjMuOC02LjYgMzUuN2wtNDMuNiA0My42Yy0zLjEgMy4xLTMuMSA4LjIgMCAxMS4zIDMuMSAzLjEgOC4yIDMuMSAxMS4zIDBsNDMuNi00My42YzExLjggNS44IDI2IDMuMyAzNS43LTYuNiA4LjYtOC45IDExLjMtMjEuOSA2LjktMzMuNGwxMy45LTEzLjljMy4xLTMuMSAzLjEtOC4yIDAtMTEuMy0zLjEtMy4xLTguMi0zLjEtMTEuMyAwbC0xNi41IDE2LjV6Ii8+PC9zdmc+" alt="Compass Icon">
+                Bússola Nutricional
+            </a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Descubra suas metas nutricionais personalizadas e transforme sua alimentação</h1>
+            <p>Calcule suas necessidades calóricas, macronutrientes ideais e receba um guia completo para atingir seus objetivos de forma saudável e sustentável.</p>
+            <a href="#cta" class="btn btn-large">QUERO MINHA BÚSSOLA NUTRICIONAL AGORA</a>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Por que escolher a Bússola Nutricional?</h2>
+                <p>Descubra como nosso método pode ajudar você a entender suas necessidades nutricionais</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Cálculos Precisos</h3>
+                    <p>Utilizamos fórmulas científicas reconhecidas para calcular sua Taxa Metabólica Basal e necessidades calóricas diárias com precisão.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🍽️</div>
+                    <h3>Macronutrientes Personalizados</h3>
+                    <p>Receba a distribuição ideal de proteínas, carboidratos e gorduras de acordo com seu objetivo: perda de gordura, manutenção ou ganho muscular.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Fácil de Usar</h3>
+                    <p>Interface simples e intuitiva. Basta preencher algumas informações básicas para receber seu plano personalizado em segundos.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>E-book Educativo</h3>
+                    <p>Além dos cálculos, você recebe um guia completo explicando como aplicar as informações no seu dia a dia, com dicas práticas e exemplos.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Adaptável ao seu Estilo</h3>
+                    <p>Consideramos suas preferências alimentares e restrições para sugerir opções que se encaixem no seu estilo de vida.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Abordagem Saudável</h3>
+                    <p>Focamos em nutrição adequada e hábitos sustentáveis, não em dietas restritivas ou modismos passageiros.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works">
+        <div class="container">
+            <div class="section-title">
+                <h2>Como Funciona</h2>
+                <p>Em apenas 3 passos simples, você terá acesso às suas metas nutricionais personalizadas</p>
+            </div>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Preencha o Formulário</h3>
+                    <p>Informe seus dados básicos como idade, peso, altura, nível de atividade física e objetivo principal.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Receba seus Resultados</h3>
+                    <p>Nossa ferramenta calcula automaticamente suas necessidades calóricas e distribuição ideal de macronutrientes.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Aplique o Conhecimento</h3>
+                    <p>Use o e-book complementar para entender como aplicar essas informações no seu dia a dia e montar suas refeições.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <h2>O que dizem nossos usuários</h2>
+                <p>Veja como a Bússola Nutricional tem ajudado pessoas reais a transformar sua alimentação</p>
+            </div>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>Finalmente entendi quanto devo comer para meus objetivos! Antes eu seguia dietas genéricas que nunca funcionavam. Com a Bússola Nutricional, consegui adaptar minha alimentação ao meu estilo de vida e já perdi 5kg em 2 meses, sem passar fome!</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="https://cdn.pixabay.com/photo/2017/08/01/08/29/woman-2563491_1280.jpg" alt="Foto de Mariana">
+                        <div class="author-info">
+                            <h4>Mariana Silva</h4>
+                            <p>São Paulo, SP</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>Como praticante de musculação, eu sempre tive dificuldade em saber a quantidade certa de proteína e carboidratos. A Bússola Nutricional me deu números precisos e o e-book me ajudou a montar refeições práticas que cabem no meu orçamento. Recomendo demais!</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="https://cdn.pixabay.com/photo/2016/11/21/12/42/beard-1845166_1280.jpg" alt="Foto de Rafael">
+                        <div class="author-info">
+                            <h4>Rafael Oliveira</h4>
+                            <p>Belo Horizonte, MG</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>Tenho diabetes tipo 2 e precisava entender melhor sobre carboidratos. A Bússola me ajudou a ter uma noção clara de quanto e quais tipos consumir. Mostrei para minha nutricionista e ela aprovou as recomendações! O material é muito educativo.</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="https://cdn.pixabay.com/photo/2017/11/19/07/30/woman-2961959_1280.jpg" alt="Foto de Cláudia">
+                        <div class="author-info">
+                            <h4>Cláudia Mendes</h4>
+                            <p>Recife, PE</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq">
+        <div class="container">
+            <div class="section-title">
+                <h2>Perguntas Frequentes</h2>
+                <p>Tire suas dúvidas sobre a Bússola Nutricional</p>
+            </div>
+            
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">A Bússola Nutricional substitui uma consulta com nutricionista?</div>
+                    <div class="faq-answer">
+                        <p>Não. A Bússola Nutricional é uma ferramenta educativa que fornece estimativas baseadas em fórmulas científicas, mas não substitui o acompanhamento individualizado de um profissional de saúde. Recomendamos que você utilize as informações como um ponto de partida e consulte um nutricionista ou médico para orientações específicas, especialmente se você tiver condições de saúde preexistentes.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Como são calculadas as necessidades calóricas?</div>
+                    <div class="faq-answer">
+                        <p>Utilizamos a fórmula de Mifflin-St Jeor, considerada uma das mais precisas atualmente, para calcular sua Taxa Metabólica Basal (TMB). Em seguida, aplicamos um fator baseado no seu nível de atividade física para determinar o Gasto Energético Total (GET). Por fim, ajustamos esse valor de acordo com seu objetivo (perda de gordura, manutenção ou ganho muscular).</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">O que está incluído no pacote?</div>
+                    <div class="faq-answer">
+                        <p>Ao adquirir a Bússola Nutricional, você recebe:</p>
+                        <ul>
+                            <li>Acesso à ferramenta de cálculo personalizado</li>
+                            <li>Relatório detalhado com suas necessidades calóricas e macronutrientes</li>
+                            <li>E-book completo "Bússola Nutricional: O Guia para Entender Suas Metas e Montar Seu Prato Ideal"</li>
+                            <li>Sugestões de alimentos e estruturas de refeições baseadas nas suas preferências</li>
+                            <li>Acesso ao grupo exclusivo de suporte no Telegram</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Quanto tempo tenho acesso ao material?</div>
+                    <div class="faq-answer">
+                        <p>O acesso é vitalício! Após a compra, você pode acessar e baixar todo o material quantas vezes quiser. Além disso, caso haja atualizações futuras no e-book ou na ferramenta, você receberá gratuitamente.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">Posso usar a ferramenta mais de uma vez?</div>
+                    <div class="faq-answer">
+                        <p>Sim! Você pode utilizar a ferramenta quantas vezes quiser. Isso é especialmente útil quando há mudanças no seu peso, nível de atividade física ou objetivo. Recomendamos recalcular suas necessidades a cada 3-4 meses ou sempre que houver mudanças significativas em sua rotina.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">E se eu não gostar do material?</div>
+                    <div class="faq-answer">
+                        <p>Oferecemos garantia de satisfação de 7 dias. Se você não ficar satisfeito com o material por qualquer motivo, basta solicitar o reembolso dentro desse período e devolveremos 100% do seu investimento, sem questionamentos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta" id="cta">
+        <div class="container">
+            <h2>Transforme sua alimentação hoje mesmo!</h2>
+            <p>Descubra suas necessidades nutricionais personalizadas e aprenda a montar refeições equilibradas que se encaixam no seu estilo de vida e objetivos.</p>
+            
+            <a href="#" class="btn btn-large">QUERO MINHA BÚSSOLA NUTRICIONAL AGORA</a>
+            
+            <div class="guarantee">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMjU2IDhDMTE5LjAzMyA4IDggMTE5LjAzMyA4IDI1NnMxMTEuMDMzIDI0OCAyNDggMjQ4IDI0OC0xMTEuMDMzIDI0OC0yNDhTMzkyLjk2NyA4IDI1NiA4em0wIDQ4YzExMC41MzIgMCAyMDAgODkuNDUxIDIwMCAyMDAgMCAxMTAuNTMyLTg5LjQ1MSAyMDAtMjAwIDIwMC0xMTAuNTMyIDAtMjAwLTg5LjQ1MS0yMDAtMjAwIDAtMTEwLjUzMiA4OS40NTEtMjAwIDIwMC0yMDBtMTQwLjIwNCAxMzAuMjY3bC0yMi41MzYtMjIuNzE4Yy00LjY2Ny00LjcwNS0xMi4yNjUtNC43MzYtMTYuOTctLjA2OEwyMTUuMzQ2IDMwMy42OTdsLTU5Ljc5Mi02MC4yNzdjLTQuNjY3LTQuNzA1LTEyLjI2NS00LjczNi0xNi45Ny0uMDY5bC0yMi43MTkgMjIuNTM2Yy00LjcwNSA0LjY2Ny00LjczNiAxMi4yNjUtLjA2OCAxNi45NzFsMTAyLjQgMTAzLjA2OWM0LjY2NyA0LjcwNSAxMi4yNjUgNC43MzYgMTYuOTcuMDY4bDE3Mi44LTE3MS42MzVjNC43MDQtNC42NjcgNC43MzUtMTIuMjY1LjA2Ny0xNi45NzF6Ii8+PC9zdmc+" alt="Guarantee Icon">
+                <div class="guarantee-text">
+                    <h4>Garantia de 7 dias</h4>
+                    <p>Se você não ficar satisfeito, devolvemos 100% do seu dinheiro.</p>
+                </div>
+            </div>
+            
+            <div class="disclaimer">
+                <h3>Aviso Importante</h3>
+                <p>A Bússola Nutricional é uma ferramenta informativa e educacional desenvolvida para fornecer estimativas de suas necessidades calóricas e de macronutrientes com base nas informações fornecidas por você e em fórmulas padrão.</p>
+                <p>Este relatório e as sugestões contidas nele NÃO substituem uma consulta ou avaliação individualizada com um profissional de saúde qualificado (médico ou nutricionista).</p>
+                <p>Os cálculos são estimativas e não levam em conta todas as suas particularidades metabólicas, histórico de saúde completo, condições médicas preexistentes, alergias, intolerâncias ou uso de medicamentos. Resultados individuais podem variar.</p>
+                <p>NÃO inicie nenhuma dieta restritiva ou faça alterações significativas em sua alimentação sem antes consultar um médico ou nutricionista. Eles são os únicos profissionais capacitados para avaliar sua saúde e prescrever um plano alimentar seguro e adequado às suas necessidades individuais.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Bússola Nutricional</h3>
+                    <p>Sua ferramenta para descobrir metas nutricionais personalizadas e transformar sua alimentação de forma saudável e sustentável.</p>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Links Rápidos</h3>
+                    <ul>
+                        <li><a href="#">Início</a></li>
+                        <li><a href="#">Como Funciona</a></li>
+                        <li><a href="#">Depoimentos</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Suporte</h3>
+                    <ul>
+                        <li><a href="#">Contato</a></li>
+                        <li><a href="#">Política de Privacidade</a></li>
+                        <li><a href="#">Termos de Uso</a></li>
+                        <li><a href="#">Política de Reembolso</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Bússola Nutricional. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // FAQ Accordion
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                
+                question.addEventListener('click', () => {
+                    // Close all other items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item && otherItem.classList.contains('active')) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current item
+                    item.classList.toggle('active');
+                });
+            });
+            
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
